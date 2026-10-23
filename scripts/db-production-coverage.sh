@@ -104,7 +104,8 @@ fi
 (
     cd "$ROOT"
     COVERAGE_ARGS=(
-        --quiet
+        # nextest has no --quiet; --cargo-quiet quiets the cargo build the same way
+        --cargo-quiet
         -p db
         --features production-coverage,index-lifecycle-testing
         --json
