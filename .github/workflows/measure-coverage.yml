@@ -1,0 +1,28 @@
+name: Production coverage (measure)
+
+# fork-only measurement harness: the DB production thresholds job from
+# db-vector-production-coverage.yml, dispatch-only
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  production-coverage:
+    name: DB production thresholds
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@1.97.1
+        with:
+          components: llvm-tools-preview
+      - uses: taiki-e/install-action@cargo-llvm-cov
+      - name: Verify coverage prerequisites
+        run: jq --version
+      - name: Enforce DB production coverage
+        env:
+          CARGO_INCREMENTAL: "0"
+        run: scripts/db-production-coverage.sh
+
