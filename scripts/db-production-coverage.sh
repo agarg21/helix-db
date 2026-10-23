@@ -114,13 +114,14 @@ fi
     for target in "${TARGETS[@]}"; do
         COVERAGE_ARGS+=(--test "$target")
     done
-    # Run each libtest binary serially so randomized graph tests and async
-    # continuation mapping cannot race one another while collecting the
-    # source-line disposition evidence.
+    # Run every test in its own process (cargo-nextest) so randomized graph
+    # tests and async continuation mapping cannot race one another inside a
+    # process while collecting the source-line disposition evidence; separate
+    # processes run in parallel across the runner's cores.
     RUST_MIN_STACK="${RUST_MIN_STACK:-16777216}" \
-        RUST_TEST_THREADS=1 \
         CARGO_TARGET_DIR="$TEMP_ROOT/target" \
-        cargo llvm-cov "${COVERAGE_ARGS[@]}"
+        cargo llvm-cov nextest "${COVERAGE_ARGS[@]}" \
+            --test-threads "${DB_COVERAGE_TEST_THREADS:-num-cpus}"
 )
 
 if [[ "${DB_COVERAGE_DEBUG_FILES:-0}" == "1" ]]; then

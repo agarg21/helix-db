@@ -19,6 +19,7 @@ jobs:
         with:
           components: llvm-tools-preview
       - uses: taiki-e/install-action@cargo-llvm-cov
+      - uses: taiki-e/install-action@cargo-nextest
       - name: Verify coverage prerequisites
         run: jq --version
       - name: Enforce DB production coverage
